@@ -9,7 +9,7 @@ Command line parameters
         String, Specify a name for mkfifo named pipe, 
         default is 'subtitle_pipe' in the current folder (default "/tmp/subtitle_pipe")
                         
-*-inc**
+*-inc*
         Boolean, If true, timecodes in subtitles will incrementing to textduration, default is true.
 
 
