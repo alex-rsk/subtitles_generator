@@ -1,6 +1,6 @@
-Emulate generation of VTT subitles.
+# Emulate generation of VTT subitles.
 
-Command line parameters
+## Command line parameters
 
 *-delay*
         Int, Specify a delay in seconds between each subtitle, (default 10)
@@ -42,3 +42,28 @@ Default is "file"
 
 If you run in mode "listen" , then the program doesn't produce any output. Instead, it is listening specified UDP port (default 9273).
 You should run another instance of the program in the separate terminal window in mode "udp" to produce some content.
+
+## Examples
+
+Generate consequent subtitles for timecodes 0-10 sec, each 10 seconds, timecodes are incrementing, writing to pipe:
+
+`./test_subs  -mode=pipe `
+
+Generate sequence of subtitles using udp
+
+`./test_subs  -mode=udp`
+
+Generate using udp each 3 seconds, timecodes will be: 0-3, 3-6, 9-6  etc
+
+`./test_subs  -delay=3 -textdur=3  -mode=udp`
+
+Generate using udp, without incrementing timecodes (always 0-3)
+`./test_subs  -delay=3 -textdur=3  -inc=false -mode=udp`
+
+Generate using stdout each 3 seconds, timecodes 0-3, without incrementing timecodes, putting output to stdout
+`./test_subs  -delay=3 -textdur=3  -inc=false -mode=stdout`
+
+## Makefile commands
+`make clean` -   to clean generates subtitles.
+`make run` for compile and run.
+`make build` for compile source to binary file
