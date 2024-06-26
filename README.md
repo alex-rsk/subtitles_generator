@@ -57,8 +57,8 @@ Generate using udp each 3 seconds, timecodes will be: 0-3, 3-6, 9-6  etc
 
 `./test_subs  -delay=3 -textdur=3  -mode=udp`
 
-Generate using udp, without incrementing timecodes (always 0-3)
-`./test_subs  -delay=3 -textdur=3  -inc=false -mode=udp`
+Generate using udp, without incrementing timecodes (always 0-3), refresh each 5 sec
+`./test_subs  -delay=5 -textdur=3  -inc=false -mode=udp`
 
 Generate using stdout each 3 seconds, timecodes 0-3, without incrementing timecodes, putting output to stdout
 `./test_subs  -delay=3 -textdur=3  -inc=false -mode=stdout`
