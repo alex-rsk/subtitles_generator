@@ -34,12 +34,16 @@ func printTimeRange(startTime int, endTime int) string {
 	return fmt.Sprintf("%s --> %s", formattedStartTime, formattedEndTime)
 }
 
+func listen() {
+
+}
+
 func main() {
 	
 	flag.Usage = func() {
-		w := flag.CommandLine.Output() // may be os.Stderr - but not necessarily
+		w := flag.CommandLine.Output() 
 	
-		fmt.Fprintf(w, "Usage of %s: ...custom preamble... \n", os.Args[0])
+		fmt.Fprintf(w, "Usage of %s: \n", os.Args[0])
 	
 		flag.PrintDefaults()
 	}
@@ -49,6 +53,7 @@ func main() {
 		 'stdout' writes each to stdout, 
 		 'udp' writes each to udp connection, see udpport setting
 		 'pipe' writes to mkfifo, see fifoname setting. 
+		 'listen'  runs UDP listener to debug UDP output
 		 Default is 'file'`)
 	
 	userDefinedText := flag.String("text", "", `User defined text for subtitles, default is number of current subtitle.
@@ -62,7 +67,7 @@ func main() {
 
 	delay := flag.Int("delay", 10, "Specify a delay in seconds between each subtitle, default is 10")
 	
-	incrementTimeCodes := flag.Bool("inc", false, "If true, timecodes in subtitles will incrementing to textduration, default is true")
+	incrementTimeCodes := flag.Bool("inc", true, "If true, timecodes in subtitles will incrementing to textduration, default is true")
 
 	fifoName := flag.String("fifoname", "/tmp/subtitle_pipe", `Specify a name for mkfifo named pipe, 
 		default is 'subtitle_pipe' in the current folder`)
@@ -70,25 +75,30 @@ func main() {
 	flag.Parse()
 
 	c := 0
+
+	port := strconv.Itoa(*udpPort)
+	udpAddr, _ := net.ResolveUDPAddr("udp", "127.0.0.1:"+port)
+
 	if _, err := os.Stat(subsDirectory); os.IsNotExist(err) {
 		os.Mkdir(subsDirectory, 0755)
 	}
-	from := 0+*offset
+	from := *offset
 	to := *textDur+*offset
-	for {
-		c=c+1		
-		subs := generateSubtitle(from, to, fmt.Sprintf("Subtitle piece number %d", c))
-		if (*incrementTimeCodes) {
-			from = from+*textDur+*offset
-			to  = from+*textDur+*offset
-		}
-		
+
+	for {		
+
 		if (*userDefinedText != "") {
 			currentTime := time.Now()
 			formattedTime := currentTime.Format("2006-01-02 15:04:05")
 			output := strings.Replace(*userDefinedText, "{s}", formattedTime, -1)
-			output  = strings.Replace(*userDefinedText, "{d}", strconv.Itoa(c), -1)
-			subs = output
+			output  = strings.Replace(output, "{n}", strconv.Itoa(c), -1)
+		}
+		subs := generateSubtitle(from, to, fmt.Sprintf("Subtitle piece number %d", c))
+
+		c=c+1
+		if (*incrementTimeCodes) {
+			from = from+*textDur+*offset
+			to  = from+*textDur
 		}
 
 		fileName := fmt.Sprintf("%s/subtitle_%d.vtt", subsDirectory, c)
@@ -125,39 +135,6 @@ func main() {
 		}
 
 		if (*mode == "udp") {		
-			go func() {
-				port := strconv.Itoa(*udpPort)
-				udpAddr, err := net.ResolveUDPAddr("udp", "127.0.0.1:"+port)
-				if err != nil {
-					fmt.Println("Error:", err)
-					return
-				}
-
-				conn, err := net.ListenUDP("udp", udpAddr)
-				if err != nil {
-					fmt.Println("Error listen UDP:", err)
-					return
-				}
-
-				defer conn.Close()
-				
-		
-				fmt.Println("UDP server listening on", conn.LocalAddr().String())
-		
-				// Receive and handle incoming UDP packets
-				buf := make([]byte, 1024)
-				for {
-					n, addr, err := conn.ReadFromUDP(buf)
-					if err != nil {
-						fmt.Println("Error:", err)
-						continue
-					}
-		
-					fmt.Printf("Received %d bytes from %s\n", n, addr.String())
-					fmt.Println("Text:", string(buf[:n]))
-				}
-			}()
-
 				// Send text over UDP
 			conn, err := net.DialUDP("udp", nil, &net.UDPAddr{
 				IP:   net.ParseIP("127.0.0.1"),
@@ -175,6 +152,34 @@ func main() {
 				return
 			}
 		
+		}
+
+		if (*mode == "listen") {			
+			conn, err := net.ListenUDP("udp", udpAddr)
+			if err != nil {
+				fmt.Println("Error listen UDP:", err)
+				return
+			}
+
+			defer conn.Close()
+			
+
+			fmt.Println("UDP server listening on", conn.LocalAddr().String())
+			for {
+
+				// Receive and handle incoming UDP packets
+				buf := make([]byte, 1024)
+				for {
+					n, addr, err := conn.ReadFromUDP(buf)
+					if err != nil {
+						fmt.Println("Error:", err)
+						continue
+					}
+
+					fmt.Printf("Received %d bytes from %s\n", n, addr.String())
+					fmt.Println("Text:", string(buf[:n]))
+				}
+			}
 		}
 
 		time.Sleep(time.Duration(*delay) * time.Second)		

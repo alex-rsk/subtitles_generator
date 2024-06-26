@@ -8,3 +8,7 @@ run:
 	go build test_subs.go
 	chmod +x ./test_subs
 	./test_subs
+build:
+	find ./subs -type f -name "*.vtt" -delete
+	go build test_subs.go
+
