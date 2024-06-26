@@ -3,17 +3,16 @@
 ## Command line parameters
 
 *-delay*
-        Int, Specify a delay in seconds between each subtitle, (default 10)
+        Int, Specify a delay in seconds between each generation of subtitles (default 10).
         
 *-fifoname* 
-        String, Specify a name for mkfifo named pipe, 
-        default is 'subtitle_pipe' in the current folder (default "/tmp/subtitle_pipe")
+        String, Specify a path to named pipe (mkfifo), 
+        default is '/tmp/subtitle_pipe'.
                         
-*-inc*
+*-inc* 
         Boolean, If true, timecodes in subtitles will incrementing to textduration, default is true.
 
-
-*-mode*
+*-mode* 
      String, specify a mode of writing subtitles:
 * 'file' writes each sub to a separate file, 
 * 'stdout' writes each to stdout, 
