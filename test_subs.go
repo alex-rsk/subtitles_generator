@@ -31,7 +31,7 @@ func printTimeRange(startTime int, endTime int) string {
 	seconds = endTime % 60
 	formattedEndTime := fmt.Sprintf("%02d:%02d:%02d", hours, minutes, seconds)
 
-	return fmt.Sprintf("%s --> %s", formattedStartTime, formattedEndTime)
+	return fmt.Sprintf("%s.000 --> %s.000", formattedStartTime, formattedEndTime)
 }
 
 func listen() {
