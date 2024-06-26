@@ -66,3 +66,6 @@ Generate using stdout each 3 seconds, timecodes 0-3, without incrementing timeco
 `make clean` -   to clean generates subtitles.
 `make run` for compile and run.
 `make build` for compile source to binary file
+
+Useful:
+WEBVTT validator: https://w3c.github.io/webvtt.js/parser.html
