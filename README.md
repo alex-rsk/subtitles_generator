@@ -1,4 +1,4 @@
-#Emulate generation of VTT subitles.
+Emulate generation of VTT subitles.
 ```
 Usage of ./test_subs: 
   -delay int
