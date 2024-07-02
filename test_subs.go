@@ -15,11 +15,13 @@ const subsDirectory = "./subs"
 const fragmentDurationSec = 10
 
 
-func generateSubtitle(startTime int, endTime int, text string) string {
+func generateSubtitle(startTime int, endTime int, text string, pad *bool) string {
 	timeStr := printTimeRange(startTime, endTime)
-	subtitle := fmt.Sprintf("WEBVTT\n\n%s\n%s", timeStr, text)
+	padStr := func() string { if *pad { return "\n" } else {  return  "" }} ()
+	subtitle := padStr + fmt.Sprintf("WEBVTT\n\n%s\n%s", timeStr, text)
 	return subtitle
 }
+
 
 func printTimeRange(startTime int, endTime int) string {
 	hours := startTime / 3600
@@ -34,9 +36,6 @@ func printTimeRange(startTime int, endTime int) string {
 	return fmt.Sprintf("%s.000 --> %s.000", formattedStartTime, formattedEndTime)
 }
 
-func listen() {
-
-}
 
 func main() {
 	
@@ -66,6 +65,10 @@ func main() {
 	offset := flag.Int("offset", 0, "Specify an offset for timecodes, default is 0")
 
 	delay := flag.Int("delay", 10, "Specify a delay in seconds between each subtitle, default is 10")
+
+	//@todo intervals := flag.Int("intervals", 1, "Specify quantity of intervals in given subtitle")
+
+	pad := flag.Bool("pad", false, "Whether to add \\n newline  before new subtitle")
 	
 	incrementTimeCodes := flag.Bool("inc", true, "If true, timecodes in subtitles will incrementing to textduration, default is true")
 
@@ -93,7 +96,7 @@ func main() {
 			output := strings.Replace(*userDefinedText, "{s}", formattedTime, -1)
 			output  = strings.Replace(output, "{n}", strconv.Itoa(c), -1)
 		}
-		subs := generateSubtitle(from, to, fmt.Sprintf("Subtitle piece number %d", c))
+		subs := generateSubtitle(from, to, fmt.Sprintf("Subtitle piece number %d", c), pad)
 
 		c=c+1
 		if (*incrementTimeCodes) {
