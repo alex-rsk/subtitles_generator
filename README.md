@@ -37,7 +37,9 @@ Default is "file"
         
 *-udpport*
         Int, Specify a port for udp (default 9723)
-       
+
+*-pad*
+	Bool, Specify whether to add new line before each sub or not (default false)
 
 If you run in mode "listen" , then the program doesn't produce any output. Instead, it is listening specified UDP port (default 9273).
 You should run another instance of the program in the separate terminal window in mode "udp" to produce some content.
@@ -61,6 +63,9 @@ Generate using udp, without incrementing timecodes (always 0-3), refresh each 5 
 
 Generate using stdout each 3 seconds, timecodes 0-3, without incrementing timecodes, putting output to stdout
 `./test_subs  -delay=3 -textdur=3  -inc=false -mode=stdout`
+
+Generate using udp with pad of 1 new line before each sub:
+./test_subs -mode=udp -pad=true
 
 ## Makefile commands
 `make clean` -   to clean generates subtitles.
