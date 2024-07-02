@@ -65,7 +65,7 @@ Generate using stdout each 3 seconds, timecodes 0-3, without incrementing timeco
 `./test_subs  -delay=3 -textdur=3  -inc=false -mode=stdout`
 
 Generate using udp with pad of 1 new line before each sub:
-./test_subs -mode=udp -pad=true
+`./test_subs -mode=udp -pad=true`
 
 ## Makefile commands
 `make clean` -   to clean generates subtitles.
